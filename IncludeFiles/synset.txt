@@ -1,0 +1,10 @@
+0 letter A
+1 letter E
+2 letter I
+3 letter O
+4 letter U
+5 mouth closed
+6 tongue down 
+7 tongue left
+8 tongue right
+9 tongue up

@@ -1,0 +1,6 @@
+/home/noega/Desktop/stasm/build/CMakeFiles/edit_cache.dir
+/home/noega/Desktop/stasm/build/CMakeFiles/rebuild_cache.dir
+/home/noega/Desktop/stasm/build/Source/CMakeFiles/rebuild_cache.dir
+/home/noega/Desktop/stasm/build/Source/CMakeFiles/edit_cache.dir
+/home/noega/Desktop/stasm/build/Source/CMakeFiles/main.dir
+/home/noega/Desktop/stasm/build/Source/CMakeFiles/newLib.dir

@@ -1,0 +1,2 @@
+/usr/bin/ar qc libnewLib.a  CMakeFiles/newLib.dir/Streaming.cpp.o CMakeFiles/newLib.dir/Landmarks.cpp.o CMakeFiles/newLib.dir/Img.cpp.o CMakeFiles/newLib.dir/ConvolNetwork.cpp.o
+/usr/bin/ranlib libnewLib.a
