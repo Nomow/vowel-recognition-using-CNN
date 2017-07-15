@@ -83,6 +83,8 @@ void Streaming::getPredictions(Mat frame, Landmarks landmarks, Img image){
 			//imshow("Mouth Windows", frame);
 			showPredictions(conv->getPredictions(frame));
 			}
+		}else {
+				showPredictions("Face isn't detected");
 		}
 		mtx.unlock();
 	}
@@ -98,7 +100,12 @@ void Streaming::showPredictions(vector<string> predictions){
 	}
 	imshow("Prediction Window", predArea);
 }
-
+void Streaming::showPredictions(string text){
+	Mat predArea(150, 300, CV_8UC3, Scalar(0, 0, 0));
+	int y = 75;
+	putText(predArea, text, cvPoint(60, y),FONT_HERSHEY_COMPLEX_SMALL, 0.8, cvScalar(255,255,255), 1, CV_AA);
+	imshow("Prediction Window", predArea);
+}
 //destructor
 Streaming::~Streaming(){
 	delete conv;

@@ -12,4 +12,5 @@ class Streaming
 	private:
 		void getPredictions(cv::Mat frame, Landmarks landmarks, Img image);
 		void showPredictions(vector<string> predictions);
+		void showPredictions(string text);
 };
