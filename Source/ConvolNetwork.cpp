@@ -1,6 +1,6 @@
 #include "ConvolNetwork.h"
-
-
+#include <string>
+#include <cmath>
 ConvolNetwork::ConvolNetwork(const string& model_file,
 	const string& trained_file,
 	const string& mean_file,
@@ -74,14 +74,17 @@ std::vector<Prediction> ConvolNetwork::Classify(const cv::Mat& img, int N) {
 	return predictions;
 }
 
-void ConvolNetwork::displayPredictions(const cv::Mat & img)
+std::vector<string> ConvolNetwork::getPredictions(const cv::Mat & img)
 {
+	std::vector<string> predOutp;
 	std::vector<Prediction> predictions = Classify(img);
-	cout << "Predictions" << endl;
-	cout << "--------------------" << endl;
 	for (int i = 0; i < predictions.size(); i++) {
-		cout << i + 1 << ". " << setprecision(4) << predictions[i].second << " " << predictions[i].first << endl;
+		stringstream stream;
+		stream << i + 1 << ". " << setw(5) << fixed << setprecision(2) << predictions[i].second * 100  << "% "  << predictions[i].first;
+		string pred = stream.str();
+		predOutp.push_back(pred.erase(pred.length()-1));
 	}
+	return predOutp;
 }
 
 

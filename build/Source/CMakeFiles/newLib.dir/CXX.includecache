@@ -19,6 +19,8 @@ opencv2/imgproc/imgproc.hpp
 ../Headers/opencv2/imgproc/imgproc.hpp
 opencv2/highgui/highgui.hpp
 ../Headers/opencv2/highgui/highgui.hpp
+string
+-
 
 ../Headers/Img.h
 iostream
@@ -49,6 +51,10 @@ Img.h
 /home/noega/Desktop/stasm/Source/ConvolNetwork.cpp
 ConvolNetwork.h
 /home/noega/Desktop/stasm/Source/ConvolNetwork.h
+string
+-
+cmath
+-
 
 /home/noega/Desktop/stasm/Source/Img.cpp
 Img.h

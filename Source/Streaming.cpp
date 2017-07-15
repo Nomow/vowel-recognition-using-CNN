@@ -9,14 +9,14 @@
 #include <mutex>
 using namespace std;
 using namespace cv;
-
+static const int arrSize = 2 * stasm_NLANDMARKS;
 ConvolNetwork *conv;
 int width = 160;
 int heigth = 80;
 int foundface;
-int arrSize = 2 * stasm_NLANDMARKS;
-float landmCoords[2 * stasm_NLANDMARKS];
+float landmCoords[arrSize];
 mutex mtx;
+//initialize
 Streaming::Streaming()
 {
 	string model_file = "//home//noega//Desktop//stasm//IncludeFiles//deploy.prototxt";
@@ -31,7 +31,7 @@ Streaming::Streaming()
 // captures stream
 void Streaming::capture() {
 	cout << "cam capture" << endl;
-	VideoCapture cap(1);
+	VideoCapture cap(-1);
 	cap.set(CV_CAP_PROP_FPS, 24);
 	cap.set(CV_CAP_PROP_FRAME_WIDTH, 480);
 	cap.set(CV_CAP_PROP_FRAME_HEIGHT, 280);
@@ -44,14 +44,12 @@ void Streaming::capture() {
 			cout << "cap no frame" << endl;
 			break;
 		}
-		//read frame 1 threeads
-		//convol otraja threadaa ar mutex
-
-		resize(frame, frame, Size(480, 280), 0, 0, INTER_CUBIC);
 		imshow("Stream Window",frame);
-		thread t1 (&Streaming::getPredictions, this, frame, landmarks, image);
+		Mat resizedFrame;
+		resize(frame.clone(), resizedFrame, Size(480, 280), 0, 0, INTER_CUBIC);
+		//resize(resizedFrame, resizedFrame, Size(480, 280), 0, 0, INTER_CUBIC);
+		thread t1 (&Streaming::getPredictions, this, resizedFrame, landmarks, image);
 		t1.detach();
-		//getPredictions(frame, landmarks, image);
 		int k = waitKey(1);
 		if ( k == 27 ){
 			break;
@@ -59,37 +57,49 @@ void Streaming::capture() {
 	}
 }
 
+//gets predictions
 void Streaming::getPredictions(Mat frame, Landmarks landmarks, Img image){
   if(mtx.try_lock() == true){
-		Mat landmFrame;
-		landmFrame = frame;
-		cv::cvtColor(landmFrame, landmFrame, cv::COLOR_BGR2GRAY);
-		if (!stasm_search_single(&foundface, landmCoords, (const char*)landmFrame.data, landmFrame.cols, landmFrame.rows, "../" , "/home/noega/Desktop"))
-		{
-			printf("Error in stasm_search_single: %s\n", stasm_lasterr());
-		}
-
-		if (foundface){
-			//	cout << "face is detected" << endl;
-			std::vector< std::vector<int> > coordinates = landmarks.getCoordinates(landmCoords, arrSize);
-			int centroidX = landmarks.getCentroidX(coordinates);
-			//gets centroid y
-			int centroidY = landmarks.getCentroidY(coordinates);
-			//gets top left x
-			int topLeftX = landmarks.getTopLeftX(width, centroidX);
-			//gets top left y
-			int topLeftY = landmarks.getTopLeftY(heigth, centroidY);
-			if (topLeftX  >= 0 && topLeftY >= 0 && topLeftX + width <= 480 && topLeftY + heigth <= 280) {
-				Mat croppedFrame = image.getCroppedImage(topLeftX, topLeftY, width, heigth, frame);
+	Mat grayScFrame;
+	cv::cvtColor(frame, grayScFrame, cv::COLOR_BGR2GRAY);
+	//finds face and landmark coordinates
+	if (!stasm_search_single(&foundface, landmCoords, (const char*)grayScFrame.data, grayScFrame.cols, grayScFrame.rows, "../" , "/home/noega/Desktop"))
+	{
+		cout << "Error in stasm_search_single: " << stasm_lasterr() << endl;
+	}
+	if (foundface){
+		//	cout << "face is detected" << endl;
+		std::vector< std::vector<int> > coordinates = landmarks.getCoordinates(landmCoords, arrSize);
+		int centroidX = landmarks.getCentroidX(coordinates);
+		//gets centroid y
+		int centroidY = landmarks.getCentroidY(coordinates);
+		//gets top left x
+		int topLeftX = landmarks.getTopLeftX(width, centroidX);
+		//gets top left y
+		int topLeftY = landmarks.getTopLeftY(heigth, centroidY);
+		if (topLeftX  >= 0 && topLeftY >= 0 && topLeftX + width <= 480 && topLeftY + heigth <= 280) {
+			frame = image.getCroppedImage(topLeftX, topLeftY, width, heigth, frame);
 			//image.showLandmarks(frame, coordinates);
-			//imshow("Mouth Windows", croppedFrame);
-				conv->displayPredictions(croppedFrame);
+			//imshow("Mouth Windows", frame);
+			showPredictions(conv->getPredictions(frame));
 			}
 		}
 		mtx.unlock();
 	}
 }
 
+//shows predictions on new window
+void Streaming::showPredictions(vector<string> predictions){
+	Mat predArea(150, 300, CV_8UC3, Scalar(0, 0, 0));
+	int y = 0;
+	for(int i = 0; i < predictions.size(); ++i){
+		y += 25;
+		putText(predArea, predictions[i], cvPoint(10,y),FONT_HERSHEY_COMPLEX_SMALL, 0.8, cvScalar(255,255,255), 1, CV_AA);
+	}
+	imshow("Prediction Window", predArea);
+}
+
+//destructor
 Streaming::~Streaming(){
 	delete conv;
 }

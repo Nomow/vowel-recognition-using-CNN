@@ -11,4 +11,5 @@ class Streaming
 		~Streaming();
 	private:
 		void getPredictions(cv::Mat frame, Landmarks landmarks, Img image);
+		void showPredictions(vector<string> predictions);
 };

@@ -4,9 +4,8 @@ Landmarks::Landmarks()
 
 }
 
-
+//gets mouth coordinates
 std::vector<std::vector<int> > Landmarks::getCoordinates(float arr[], int arrSize){
-
   std::vector< std::vector<int> > coordinates;
   std::vector<int> row;
   for (int i = 59; i < 76; ++i){
